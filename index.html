@@ -1,75 +1,7 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Gráficas Interactivas con Plotly</title>
-  <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      text-align: center;
-    }
-    select {
-      font-size: 16px;
-      padding: 5px 10px;
-      margin-bottom: 20px;
-    }
-    #grafico {
-      width: 100%;
-      height: 500px;
-    }
-  </style>
-</head>
+<html>
 <body>
-  <h1>Gráficas Interactivas con Selección de Campos</h1>
-  
-  <label for="campo-select">Selecciona el campo para graficar:</label><br />
-  <select id="campo-select"></select>
-  
-  <div id="grafico"></div>
-  
-  <script>
-    const x = [1, 2, 3, 4, 5, 6, 7];
-    const datos = {
-      Temperatura: [22, 21, 20, 19, 21, 23, 24],
-      Humedad: [30, 35, 40, 38, 36, 33, 31],
-      Presion: [1012, 1013, 1011, 1010, 1014, 1015, 1013],
-    };
-
-    const select = document.getElementById('campo-select');
-    const graficoDiv = document.getElementById('grafico');
-
-    Object.keys(datos).forEach(campo => {
-      const option = document.createElement('option');
-      option.value = campo;
-      option.textContent = campo;
-      select.appendChild(option);
-    });
-
-    function actualizarGrafico(campo) {
-      const trace = {
-        x: x,
-        y: datos[campo],
-        mode: 'lines+markers',
-        type: 'scatter',
-        name: campo,
-      };
-      const layout = {
-        title: `Datos de ${campo}`,
-        xaxis: { title: 'Tiempo' },
-        yaxis: { title: campo },
-      };
-      Plotly.newPlot(graficoDiv, [trace], layout);
-    }
-
-    select.addEventListener('change', e => {
-      actualizarGrafico(e.target.value);
-    });
-
-    actualizarGrafico(select.value || Object.keys(datos)[0]);
-  </script>
+<h1>Hello World</h1>
+<p>I'm hosted with GitHub Pages.</p>
 </body>
 </html>
