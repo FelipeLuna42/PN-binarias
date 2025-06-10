@@ -1,7 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tabla y gráfica desde CSV</title>
+  <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 4px 6px;
+      text-align: left;
+      font-size: 12px;
+    }
+    select {
+      margin: 10px;
+      font-size: 14px;
+    }
+    #grafico {
+      height: 500px;
+    }
+  </style>
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+  <h1>Visualización de Tabla y Gráfica desde CSV</h1>
+
+  <p>
+    Eje X:
+    <select id="x-select"></select>
+    Eje Y:
+    <select id="y-select"></select>
+    <button onclick="graficar()">Graficar</button>
+  </p>
+
+  <div id="grafico"></div>
+
+  <h2>Tabla de datos</h2>
+  <div id="tabla"></div>
+
+  <script>
+    const CSV_URL = "/Users/friday/Documents/GitHub/PN-binarias/datos_completo.csv";  // Ruta local o URL si lo subes a GitHub
+
+    let datos = [];
+    let columnas = [];
+
+    Papa.parse(CSV_URL, {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      complete: function(result) {
+        datos = result.data;
+        columnas = result.meta.fields;
+
+        crearTabla(datos);
+        llenarSelectores(columnas);
+      }
+    });
+
+    function crearTabla(data) {
+      const tablaDiv = document.getElementById("tabla");
+      let html = "<table><thead><tr>";
+
+      columnas.forEach(col => {
+        html += `<th>${col}</th>`;
+      });
+      html += "</tr></thead><tbody>";
+
+      data.slice(0, 50).forEach(fila => {
+        html += "<tr>";
+        columnas.forEach(col => {
+          html += `<td>${fila[col]}</td>`;
+        });
+        html += "</tr>";
+      });
+
+      html += "</tbody></table>";
+      tablaDiv.innerHTML = html;
+    }
+
+    function llenarSelectores(columnas) {
+      const xSelect = document.getElementById("x-select");
+      const ySelect = document.getElementById("y-select");
+
+      columnas.forEach(col => {
+        xSelect.innerHTML += `<option value="${col}">${col}</option>`;
+        ySelect.innerHTML += `<option value="${col}">${col}</option>`;
+      });
+    }
+
+    function graficar() {
+      const xCampo = document.getElementById("x-select").value;
+      const yCampo = document.getElementById("y-select").value;
+
+      const x = datos.map(fila => fila[xCampo]);
+      const y = datos.map(fila => fila[yCampo]);
+
+      const trace = {
+        x: x,
+        y: y,
+        mode: 'markers',
+        type: 'scatter',
+        marker: { size: 6, color: 'teal' }
+      };
+
+      const layout = {
+        title: `Gráfica de ${yCampo} vs ${xCampo}`,
+        xaxis: { title: xCampo },
+        yaxis: { title: yCampo }
+      };
+
+      Plotly.newPlot('grafico', [trace], layout);
+    }
+  </script>
 </body>
 </html>
