@@ -2,124 +2,73 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Tabla y gráfica desde CSV</title>
-  <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <title>Menú con pestañas</title>
   <style>
     body {
       font-family: sans-serif;
-      max-width: 1000px;
+      max-width: 900px;
       margin: auto;
       padding: 20px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
+
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #ccc;
+      margin-bottom: 10px;
     }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 4px 6px;
-      text-align: left;
-      font-size: 12px;
+
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      border-bottom: 2px solid transparent;
+      background-color: transparent;
+      font-weight: bold;
     }
-    select {
-      margin: 10px;
-      font-size: 14px;
+
+    .tab.active {
+      border-bottom: 2px solid #0077cc;
+      color: #0077cc;
     }
-    #grafico {
-      height: 500px;
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <h1>Visualización de Tabla y Gráfica desde CSV</h1>
+  <h1>Mi página con pestañas</h1>
 
-  <p>
-    Eje X:
-    <select id="x-select"></select>
-    Eje Y:
-    <select id="y-select"></select>
-    <button onclick="graficar()">Graficar</button>
-  </p>
+  <!-- Menú de pestañas -->
+  <div class="tabs">
+    <button class="tab active" onclick="cambiarTab('grafica')">Gráfica</button>
+    <button class="tab" onclick="cambiarTab('tabla')">Tabla</button>
+  </div>
 
-  <div id="grafico"></div>
+  <!-- Contenido de las pestañas -->
+  <div id="grafica" class="tab-content active">
+    <h2>Gráfica interactiva</h2>
+    <div id="grafico">[Aquí va tu gráfica Plotly]</div>
+  </div>
 
-  <h2>Tabla de datos</h2>
-  <div id="tabla"></div>
+  <div id="tabla" class="tab-content">
+    <h2>Tabla de datos</h2>
+    <div id="tabla-datos">[Aquí va tu tabla generada con JS]</div>
+  </div>
 
   <script>
-    const CSV_URL = "datos_completo.csv";  // Ruta local o URL si lo subes a GitHub
+    function cambiarTab(id) {
+      // Ocultar todas las pestañas
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(button => button.classList.remove('active'));
 
-    let datos = [];
-    let columnas = [];
-
-    Papa.parse(CSV_URL, {
-      download: true,
-      header: true,
-      dynamicTyping: true,
-      complete: function(result) {
-        datos = result.data;
-        columnas = result.meta.fields;
-
-        crearTabla(datos);
-        llenarSelectores(columnas);
-      }
-    });
-
-    function crearTabla(data) {
-      const tablaDiv = document.getElementById("tabla");
-      let html = "<table><thead><tr>";
-
-      columnas.forEach(col => {
-        html += `<th>${col}</th>`;
-      });
-      html += "</tr></thead><tbody>";
-
-      data.slice(0, 134).forEach(fila => {
-        html += "<tr>";
-        columnas.forEach(col => {
-          html += `<td>${fila[col]}</td>`;
-        });
-        html += "</tr>";
-      });
-
-      html += "</tbody></table>";
-      tablaDiv.innerHTML = html;
-    }
-
-    function llenarSelectores(columnas) {
-      const xSelect = document.getElementById("x-select");
-      const ySelect = document.getElementById("y-select");
-
-      columnas.forEach(col => {
-        xSelect.innerHTML += `<option value="${col}">${col}</option>`;
-        ySelect.innerHTML += `<option value="${col}">${col}</option>`;
-      });
-    }
-
-    function graficar() {
-      const xCampo = document.getElementById("x-select").value;
-      const yCampo = document.getElementById("y-select").value;
-
-      const x = datos.map(fila => fila[xCampo]);
-      const y = datos.map(fila => fila[yCampo]);
-
-      const trace = {
-        x: x,
-        y: y,
-        mode: 'markers',
-        type: 'scatter',
-        marker: { size: 6, color: 'teal' }
-      };
-
-      const layout = {
-        title: `Gráfica de ${yCampo} vs ${xCampo}`,
-        xaxis: { title: xCampo },
-        yaxis: { title: yCampo }
-      };
-
-      Plotly.newPlot('grafico', [trace], layout);
+      // Activar solo la pestaña seleccionada
+      document.getElementById(id).classList.add('active');
+      event.target.classList.add('active');
     }
   </script>
 </body>
